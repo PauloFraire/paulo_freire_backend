@@ -11,6 +11,7 @@ import customsizeRoutes from './routes/customsizeRoutes.js';
 import imageActivityRoutes from './routes/imageActivityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import validateTokenRoutes from "./routes/validateTokenRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -49,6 +50,7 @@ app.use('/api', customsizeRoutes);
 app.use('/api', imageActivityRoutes);
 app.use('/api', userRoutes);
 app.use('/api', contactRoutes);
+app.use('/api', validateTokenRoutes);
 
 
 const PORT = 8000;
