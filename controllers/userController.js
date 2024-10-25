@@ -222,6 +222,42 @@ const getUserByEmail = async (req, res) => {
     }
 }
 
+// Editar usuario por email
+const updateUserByEmail = async (req, res) => {
+    const { email } = req.params;
+    const { name, lastName, password, role } = req.body;
+
+    try {
+        if (!email) {
+            return res.status(400).json({ message: 'Email requerido' });
+        }
+
+        // Encontrar al usuario por su correo electrónico
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Actualizar los campos si se proporcionan
+        user.name = name || user.name;
+        user.lastName = lastName || user.lastName;
+        user.role = role !== undefined ? role : user.role;
+
+        if (password) {
+            user.password = bcrypt.hashSync(password, 10);
+        }
+
+        // Guardar cambios en la base de datos
+        await user.save();
+
+        res.json({ message: 'Usuario actualizado correctamente' });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 export {
     getUsers,
     getUserById,
@@ -229,5 +265,6 @@ export {
     addUser,
     updateUser,
     deleteUser,
-    login
+    login,
+    updateUserByEmail
 }
