@@ -260,6 +260,7 @@ const updateUserByEmail = async (req, res) => {
     }
 };
 
+//consultar contraseñas en el historial del usuario
 const isPasswordInHistory = async (email, password) => {
     try {
         // Buscar al usuario por email
