@@ -118,15 +118,17 @@ const addUser = async (req, res) => {
             return res.status(400).json(error.message);
         }
 
+        const hashedPassword = await bcrypt.hashSync(password, 10);
+
         const user = new User({
             name,
             lastName,
             email,
-            password,
+            password: hashedPassword,
+            old_passwords: [hashedPassword], // Guardar la contraseña en old_passwords
             role
         });
 
-        user.password = await bcrypt.hashSync(password, 10);
         await user.save();
 
         res.json({ message: 'Usuario creado correctamente' });
@@ -134,7 +136,7 @@ const addUser = async (req, res) => {
         console.log(error);
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
 // Update user
 const updateUser = async (req, res) => {
@@ -258,6 +260,31 @@ const updateUserByEmail = async (req, res) => {
     }
 };
 
+//consultar contraseñas en el historial del usuario
+const isPasswordInHistory = async (email, password) => {
+    try {
+        // Buscar al usuario por email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        // Verificar si la contraseña proporcionada coincide con alguna en old_passwords
+        for (const oldPassword of user.old_passwords) {
+            const isMatch = await bcrypt.compare(password, oldPassword);
+            if (isMatch) {
+                return true; // La contraseña ya existe en el historial
+            }
+        }
+
+        return false; // La contraseña no está en el historial
+    } catch (error) {
+        console.error(error.message);
+        throw new Error('Error al verificar la contraseña en el historial');
+    }
+};
+
 export {
     getUsers,
     getUserById,
@@ -266,5 +293,6 @@ export {
     updateUser,
     deleteUser,
     login,
-    updateUserByEmail
+    updateUserByEmail,
+    isPasswordInHistory
 }
