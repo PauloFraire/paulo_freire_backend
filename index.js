@@ -62,6 +62,7 @@ app.use("/api", deslindeRoutes); // de marvin
 app.use("/api", terminosRoutes); // de marvin
 // -------------------- para la parte de acerca de --------------------------------
 // -------------------- Para slogan, logo y título de la página ------------------
+app.use("/api", socialRoutes); // de marvin
 app.use("/api", sloganRoutes); // de marvin
 app.use("/api", logoRoutes); // de marvin
 app.use("/api", headerTitleRoutes); // de marvin
