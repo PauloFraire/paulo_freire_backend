@@ -1,17 +1,16 @@
-//terminosController.js
 import Termino from "../models/Termino.js";
 
-// Obtener todos los términos
+// Obtener todos los Terminos
 const getTerminos = async (req, res) => {
   try {
-    const terminos = await Termino.find();
-    res.json(terminos);
+    const Terminos = await Termino.find();
+    res.json(Terminos);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Agregar un nuevo término
+// Agregar un nuevo Termino
 const addTermino = async (req, res) => {
   const { title, content } = req.body;
 
@@ -22,74 +21,85 @@ const addTermino = async (req, res) => {
         .json({ message: "Todos los campos son necesarios" });
     }
 
+    // Desactivar todos los Terminos existentes
+    await Termino.updateMany({}, { isActive: false });
+
+    // Crear un nuevo Termino y asignar la versión calculada automáticamente
     const termino = new Termino({
       title,
       content,
-      versions: [{ version: "1.0", createdAt: Date.now() }],
+      isActive: true, // Marcar como activo el nuevo Termino
     });
 
+    // Guardar el Termino
     await termino.save();
+
     res.status(201).json(termino);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error al agregar el Termino" });
   }
 };
 
-// Editar un término existente
+// Editar un Termino existente creando una nueva versión basada en una versión anterior
 const editTermino = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // ID del Termino que se va a editar
   const { title, content } = req.body;
 
   try {
-    const termino = await Termino.findById(id);
-    if (!termino) {
-      return res.status(404).json({ message: "Término no encontrado" });
+    // Buscar el Termino base por ID
+    const baseTermino = await Termino.findById(id);
+    if (!baseTermino) {
+      return res.status(404).json({ message: "Termino no encontrado" });
     }
 
-    // Obtener la última versión
-    const lastVersion = termino.versions.length
-      ? parseFloat(termino.versions[termino.versions.length - 1].version)
-      : 0;
-    const newVersion = (lastVersion + 0.1).toFixed(1);
+    // Desactivar el Termino actualmente activo
+    await Termino.updateMany({}, { isActive: false });
 
-    // Actualizar campos
-    termino.title = title ?? termino.title;
-    termino.content = content ?? termino.content;
+    // Obtener la última versión general para calcular la siguiente versión
+    const lastTermino = await Termino.find().sort({ version: -1 }).limit(1);
+    const nextVersion = (parseFloat(lastTermino[0].version) + 1).toFixed(1);
 
-    // Agregar nueva versión al historial
-    termino.versions.push({ version: newVersion, createdAt: Date.now() });
+    // Crear un nuevo Termino basado en el Termino seleccionado
+    const newTermino = new Termino({
+      title: title ?? baseTermino.title,
+      content: content ?? baseTermino.content,
+      version: nextVersion,
+      baseVersion: baseTermino.version, // Registrar de qué versión se originó
+      isActive: true, // Establecer el nuevo Termino como activo
+    });
 
-    const updatedTermino = await termino.save();
-    res.json(updatedTermino);
+    await newTermino.save();
+    res.json(newTermino);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Eliminar un término
+// Eliminar un Termino
 const deleteTermino = async (req, res) => {
   const { id } = req.params;
 
   try {
     const termino = await Termino.findByIdAndDelete(id);
     if (!termino) {
-      return res.status(404).json({ message: "Término no encontrado" });
+      return res.status(404).json({ message: "Termino no encontrado" });
     }
 
-    res.json({ message: "Término eliminado correctamente" });
+    res.json({ message: "Termino eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-// Establecer un término como vigente
+// Establecer un Termino como vigente
 const setTerminoVigente = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Desactivar todos los términos actuales
+    // Desactivar todos los Terminos actuales
     await Termino.updateMany({}, { isActive: false });
 
-    // Activar el término seleccionado
+    // Activar el Termino seleccionado
     const termino = await Termino.findByIdAndUpdate(
       id,
       { isActive: true },
@@ -102,15 +112,19 @@ const setTerminoVigente = async (req, res) => {
   }
 };
 
-// Obtener el término vigente
+// Obtener el Termino vigente
 const getTerminoVigente = async (req, res) => {
   try {
-    const terminoVigente = await Termino.findOne({ isActive: true });
-    res.json(terminoVigente);
+    const TerminoVigente = await Termino.findOne({ isActive: true });
+    if (!TerminoVigente) {
+      return res.status(200).json(null);
+    }
+    res.json(TerminoVigente);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 export {
   getTerminos,
   addTermino,
