@@ -21,46 +21,56 @@ const addDeslinde = async (req, res) => {
         .json({ message: "Todos los campos son necesarios" });
     }
 
+    // Desactivar todos los deslindes existentes
+    await Deslinde.updateMany({}, { isActive: false });
+
+    // Crear un nuevo deslinde y asignar la versión calculada automáticamente
     const deslinde = new Deslinde({
       title,
       content,
-      versions: [{ version: "1.0", createdAt: Date.now() }], // Establecer versión inicial
+      isActive: true, // Marcar como activo el nuevo deslinde
     });
 
+    // Guardar el deslinde
     await deslinde.save();
+
     res.status(201).json(deslinde);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error al agregar el deslinde" });
   }
 };
 
-// Editar un deslinde existente
+// Editar un deslinde existente creando una nueva versión basada en una versión anterior
 const editDeslinde = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // ID del deslinde que se va a editar
   const { title, content } = req.body;
 
   try {
-    const deslinde = await Deslinde.findById(id);
-    if (!deslinde) {
+    // Buscar el deslinde base por ID
+    const baseDeslinde = await Deslinde.findById(id);
+    if (!baseDeslinde) {
       return res.status(404).json({ message: "Deslinde no encontrado" });
     }
 
-    // Obtener la última versión y crear una nueva
-    const lastVersion = deslinde.versions.length
-      ? parseFloat(deslinde.versions[deslinde.versions.length - 1].version)
-      : 0;
+    // Desactivar el deslinde actualmente activo
+    await Deslinde.updateMany({}, { isActive: false });
 
-    const newVersion = (lastVersion + 0.1).toFixed(1); // Incrementar versión
+    // Obtener la última versión general para calcular la siguiente versión
+    const lastDeslinde = await Deslinde.find().sort({ version: -1 }).limit(1);
+    const nextVersion = (parseFloat(lastDeslinde[0].version) + 1).toFixed(1);
 
-    // Actualizar los campos y agregar la nueva versión
-    deslinde.title = title ?? deslinde.title;
-    deslinde.content = content ?? deslinde.content;
+    // Crear un nuevo deslinde basado en el deslinde seleccionado
+    const newDeslinde = new Deslinde({
+      title: title ?? baseDeslinde.title,
+      content: content ?? baseDeslinde.content,
+      version: nextVersion,
+      baseVersion: baseDeslinde.version, // Registrar de qué versión se originó
+      isActive: true, // Establecer el nuevo deslinde como activo
+    });
 
-    // Agregar nueva versión al historial
-    deslinde.versions.push({ version: newVersion, createdAt: Date.now() });
-
-    const updatedDeslinde = await deslinde.save();
-    res.json(updatedDeslinde);
+    await newDeslinde.save();
+    res.json(newDeslinde);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -106,6 +116,9 @@ const setDeslindeVigente = async (req, res) => {
 const getDeslindeVigente = async (req, res) => {
   try {
     const deslindeVigente = await Deslinde.findOne({ isActive: true });
+    if (!deslindeVigente) {
+      return res.status(200).json(null); // Explicitamente devolver null
+    }
     res.json(deslindeVigente);
   } catch (error) {
     res.status(500).json({ message: error.message });

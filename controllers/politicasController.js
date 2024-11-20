@@ -1,7 +1,6 @@
-// politicasController.js
 import Politica from "../models/Politicas.js";
 
-// Obtener términos o políticas
+// Obtener todas las políticas
 const getPoliticas = async (req, res) => {
   try {
     const politicas = await Politica.find();
@@ -22,46 +21,56 @@ const addPolitica = async (req, res) => {
         .json({ message: "Todos los campos son necesarios" });
     }
 
+    // Desactivar todas las políticas existentes
+    await Politica.updateMany({}, { isActive: false });
+
+    // Crear una nueva política y asignar la versión inicial
     const politica = new Politica({
       title,
       content,
-      versions: [{ version: "1.0", createdAt: Date.now() }], // Establecer versión inicial al agregar
+      isActive: true, // Marcar como activa la nueva política
     });
 
+    // Guardar la política
     await politica.save();
+
     res.status(201).json(politica);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(err);
+    res.status(500).json({ message: "Error al agregar la política" });
   }
 };
 
-// Editar una política existente
+// Editar una política existente creando una nueva versión basada en una versión anterior
 const editPolitica = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // ID de la política que se va a editar
   const { title, content } = req.body;
 
   try {
-    const politica = await Politica.findById(id);
-    if (!politica) {
+    // Buscar la política base por ID
+    const basePolitica = await Politica.findById(id);
+    if (!basePolitica) {
       return res.status(404).json({ message: "Política no encontrada" });
     }
 
-    // Obtener la última versión y crear una nueva
-    const lastVersion = politica.versions.length
-      ? parseFloat(politica.versions[politica.versions.length - 1].version)
-      : 0;
+    // Desactivar la política actualmente activa
+    await Politica.updateMany({}, { isActive: false });
 
-    const newVersion = (lastVersion + 0.1).toFixed(1); // Incrementar versión
+    // Obtener la última versión general para calcular la siguiente versión
+    const lastPolitica = await Politica.find().sort({ version: -1 }).limit(1);
+    const nextVersion = (parseFloat(lastPolitica[0].version) + 1).toFixed(1);
 
-    // Actualizar los campos y agregar la nueva versión
-    politica.title = title ?? politica.title;
-    politica.content = content ?? politica.content;
+    // Crear una nueva política basada en la política seleccionada
+    const newPolitica = new Politica({
+      title: title ?? basePolitica.title,
+      content: content ?? basePolitica.content,
+      version: nextVersion,
+      baseVersion: basePolitica.version, // Registrar de qué versión se originó
+      isActive: true, // Establecer la nueva política como activa
+    });
 
-    // Agregar nueva versión al historial
-    politica.versions.push({ version: newVersion, createdAt: Date.now() });
-
-    const updatedPolitica = await politica.save();
-    res.json(updatedPolitica);
+    await newPolitica.save();
+    res.json(newPolitica);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -82,7 +91,6 @@ const deletePolitica = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 // Establecer una política como vigente
 const setPoliticaVigente = async (req, res) => {
   const { id } = req.params;
@@ -108,6 +116,9 @@ const setPoliticaVigente = async (req, res) => {
 const getPoliticaVigente = async (req, res) => {
   try {
     const politicaVigente = await Politica.findOne({ isActive: true });
+    if (!politicaVigente) {
+      return res.status(200).json(null);
+    }
     res.json(politicaVigente);
   } catch (error) {
     res.status(500).json({ message: error.message });
