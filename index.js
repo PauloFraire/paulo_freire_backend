@@ -68,6 +68,14 @@ app.use("/api", logoRoutes); // de marvin
 app.use("/api", headerTitleRoutes); // de marvin
 // -------------------- Para slogan, logo y título de la página ------------------
 
+app.get("/api/error500", (req, res) => {
+  res.status(500).send("Internal Server Error");
+});
+
+app.get("/api/error400", (req, res) => {
+  res.status(400).send("Server Error");
+});
+
 const PORT = 8000;
 
 const servidor = app.listen(PORT, () => {
