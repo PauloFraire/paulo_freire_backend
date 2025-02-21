@@ -10,8 +10,6 @@ const getAcademyActivities = async (req, res) => {
     }
 }
 
-
-
 const getAcademyActivityById = async (req, res) => {
 
     const { id } = req.params;
@@ -43,7 +41,6 @@ const getAcademyActivityById = async (req, res) => {
 }
 
 //creat academy activity
-
 const createAcademyActivity = async (req, res) => {
 
     const { title, description } = req.body;

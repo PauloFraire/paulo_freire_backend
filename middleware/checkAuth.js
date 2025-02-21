@@ -3,6 +3,7 @@ import User from '../models/User.js';
 
 const checkAuth = async (req, res, next) => {
     let token;
+
     if (
         req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer")
@@ -16,28 +17,36 @@ const checkAuth = async (req, res, next) => {
                 "-password -confirmado -token -createdAt -updatedAt -__v"
             );
 
+            if (!req.usuario) {
+                return res.status(401).json({ msg: "Usuario no encontrado" });
+            }
+
             return next();
         } catch (error) {
-            return res.status(404).json({ msg: "Hubo un error" });
+            console.log("Error en checkAuth:", error);
+            return res.status(401).json({ msg: "Token inválido o expirado" });
         }
     }
 
     if (!token) {
-        const error = new Error("Token no válido");
-        return res.status(401).json({ msg: error.message });
+        return res.status(401).json({ msg: "Token no válido" });
+    }
+};
+
+const isAdmin = async (req, res, next) => {
+    if (!req.usuario) {
+        return res.status(401).json({ msg: "Usuario no autenticado" });
+    }
+
+    console.log("Rol del usuario:", req.usuario.role);
+
+    // Cambiar la condición de acceso
+    if (req.usuario.role !== 1) { // En vez de 0, permitir rol 1 si es el admin
+        return res.status(403).json({ msg: "Acceso No Autorizado" });
     }
 
     next();
 };
-
-
-const isAdmin = async (req, res, next) => {
-    if (req.usuario && req.usuario.role === 0) {
-        return next();
-    }
-    return res.status(401).json({ msg: "Acceso No Autorizado" });
-};
-
 
 
 export { checkAuth, isAdmin };
