@@ -18,6 +18,7 @@ import socialRoutes from "./routes/socialLinkRoutes.js"; // de marvin
 import sloganRoutes from "./routes/sloganRoutes.js"; // de marvin
 import logoRoutes from "./routes/logoRoutes.js"; // de marvin
 import headerTitleRoutes from "./routes/headerTitleRoutes.js"; // de marvin
+import contextoContemporaneoRoutes from "./routes/contextoContemporaneoRoutes.js";
 import ofertaEducativaRoutes from "./routes/ofertaEducativaRoutes.js";
 
 const app = express();
@@ -56,18 +57,15 @@ app.use("/api", customsizeRoutes);
 app.use("/api", imageActivityRoutes);
 app.use("/api", userRoutes);
 app.use("/api", contactRoutes);
-app.use("/api", validateTokenRoutes); // de main
-// -------------------- para la parte de acerca de --------------------------------
-app.use("/api", politicasRoutes); // de marvin
-app.use("/api", deslindeRoutes); // de marvin
-app.use("/api", terminosRoutes); // de marvin
-// -------------------- para la parte de acerca de --------------------------------
-// -------------------- Para slogan, logo y título de la página ------------------
-app.use("/api", socialRoutes); // de marvin
-app.use("/api", sloganRoutes); // de marvin
-app.use("/api", logoRoutes); // de marvin
-app.use("/api", headerTitleRoutes); // de marvin
-// -------------------- Para slogan, logo y título de la página ------------------
+app.use("/api", validateTokenRoutes);
+app.use("/api", politicasRoutes);
+app.use("/api", deslindeRoutes);
+app.use("/api", terminosRoutes);
+app.use("/api", socialRoutes);
+app.use("/api", sloganRoutes);
+app.use("/api", logoRoutes);
+app.use("/api", headerTitleRoutes);
+app.use("/api", contextoContemporaneoRoutes);
 
 //-----------------------------------------Para Oferta educativa------------------------------------------
 app.use("/api", ofertaEducativaRoutes);
