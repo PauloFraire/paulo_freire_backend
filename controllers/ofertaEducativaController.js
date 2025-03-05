@@ -235,3 +235,19 @@ export const deleteEducationalOffer = async (req, res) => {
     res.status(500).json({ error: "Error al eliminar la oferta educativa" });
   }
 };
+//Obtener una oferta educativa por id----------------------------en prueba
+export const getEducationalOfferById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const offer = await EducationalOffer.findById(id);
+
+    if (!offer) {
+      return res.status(404).json({ msg: "Oferta educativa no encontrada" });
+    }
+
+    res.json(offer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error al obtener la oferta educativa" });
+  }
+};

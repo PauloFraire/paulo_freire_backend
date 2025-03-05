@@ -3,7 +3,7 @@ import multer from "multer";
 import {
   createEducationalOffer,
   getEducationalOffers,
-  /*  getEducationalOfferById,*/
+  getEducationalOfferById,
   updateEducationalOffer,
   deleteEducationalOffer,
 } from "../controllers/ofertaEducativaController.js";
@@ -52,8 +52,8 @@ router.post(
 // Ruta para obtener todas las ofertas educativas
 router.get("/getoffter", getEducationalOffers);
 
-/*// Ruta para obtener una oferta educativa por su ID
-router.get("/getoffterid/:id", getEducationalOfferById);*/
+// Ruta para obtener una oferta educativa por su ID
+router.get("/getoffterid/:id", getEducationalOfferById);
 
 // Ruta para actualizar una oferta educativa por su ID
 router.put(
