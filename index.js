@@ -10,14 +10,15 @@ import customsizeRoutes from './routes/customsizeRoutes.js';
 import imageActivityRoutes from './routes/imageActivityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
-import validateTokenRoutes from "./routes/validateTokenRoutes.js"; // de main
-import politicasRoutes from "./routes/politicasRoutes.js"; // de marvin
-import deslindeRoutes from "./routes/deslindeRoutes.js"; // de marvin
-import terminosRoutes from "./routes/terminosRoutes.js"; // de marvin
-import socialRoutes from "./routes/socialLinkRoutes.js"; // de marvin
-import sloganRoutes from "./routes/sloganRoutes.js"; // de marvin
-import logoRoutes from "./routes/logoRoutes.js"; // de marvin
-import headerTitleRoutes from "./routes/headerTitleRoutes.js"; // de marvin
+import validateTokenRoutes from "./routes/validateTokenRoutes.js"; 
+import politicasRoutes from "./routes/politicasRoutes.js";
+import deslindeRoutes from "./routes/deslindeRoutes.js";
+import terminosRoutes from "./routes/terminosRoutes.js";
+import socialRoutes from "./routes/socialLinkRoutes.js";
+import sloganRoutes from "./routes/sloganRoutes.js";
+import logoRoutes from "./routes/logoRoutes.js";
+import headerTitleRoutes from "./routes/headerTitleRoutes.js";
+import contextoContemporaneoRoutes from "./routes/contextoContemporaneoRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -55,18 +56,15 @@ app.use("/api", customsizeRoutes);
 app.use("/api", imageActivityRoutes);
 app.use("/api", userRoutes);
 app.use("/api", contactRoutes);
-app.use("/api", validateTokenRoutes); // de main
-// -------------------- para la parte de acerca de --------------------------------
-app.use("/api", politicasRoutes); // de marvin
-app.use("/api", deslindeRoutes); // de marvin
-app.use("/api", terminosRoutes); // de marvin
-// -------------------- para la parte de acerca de --------------------------------
-// -------------------- Para slogan, logo y título de la página ------------------
-app.use("/api", socialRoutes); // de marvin
-app.use("/api", sloganRoutes); // de marvin
-app.use("/api", logoRoutes); // de marvin
-app.use("/api", headerTitleRoutes); // de marvin
-// -------------------- Para slogan, logo y título de la página ------------------
+app.use("/api", validateTokenRoutes); 
+app.use("/api", politicasRoutes);
+app.use("/api", deslindeRoutes);
+app.use("/api", terminosRoutes);
+app.use("/api", socialRoutes);
+app.use("/api", sloganRoutes);
+app.use("/api", logoRoutes);
+app.use("/api", headerTitleRoutes);
+app.use("/api", contextoContemporaneoRoutes);
 
 app.get("/api/error500", (req, res) => {
   res.status(500).send("Internal Server Error");
