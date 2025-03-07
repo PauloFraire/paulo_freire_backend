@@ -4,21 +4,22 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 
 // import routes
-import academyActivitiesRoutes from './routes/academyActivitiesRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
-import customsizeRoutes from './routes/customsizeRoutes.js';
-import imageActivityRoutes from './routes/imageActivityRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
-import validateTokenRoutes from "./routes/validateTokenRoutes.js"; 
-import politicasRoutes from "./routes/politicasRoutes.js";
-import deslindeRoutes from "./routes/deslindeRoutes.js";
-import terminosRoutes from "./routes/terminosRoutes.js";
-import socialRoutes from "./routes/socialLinkRoutes.js";
-import sloganRoutes from "./routes/sloganRoutes.js";
-import logoRoutes from "./routes/logoRoutes.js";
-import headerTitleRoutes from "./routes/headerTitleRoutes.js";
+import academyActivitiesRoutes from "./routes/academyActivitiesRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
+import customsizeRoutes from "./routes/customsizeRoutes.js";
+import imageActivityRoutes from "./routes/imageActivityRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
+import validateTokenRoutes from "./routes/validateTokenRoutes.js"; // de main
+import politicasRoutes from "./routes/politicasRoutes.js"; // de marvin
+import deslindeRoutes from "./routes/deslindeRoutes.js"; // de marvin
+import terminosRoutes from "./routes/terminosRoutes.js"; // de marvin
+import socialRoutes from "./routes/socialLinkRoutes.js"; // de marvin
+import sloganRoutes from "./routes/sloganRoutes.js"; // de marvin
+import logoRoutes from "./routes/logoRoutes.js"; // de marvin
+import headerTitleRoutes from "./routes/headerTitleRoutes.js"; // de marvin
 import contextoContemporaneoRoutes from "./routes/contextoContemporaneoRoutes.js";
+import ofertaEducativaRoutes from "./routes/ofertaEducativaRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -56,7 +57,7 @@ app.use("/api", customsizeRoutes);
 app.use("/api", imageActivityRoutes);
 app.use("/api", userRoutes);
 app.use("/api", contactRoutes);
-app.use("/api", validateTokenRoutes); 
+app.use("/api", validateTokenRoutes);
 app.use("/api", politicasRoutes);
 app.use("/api", deslindeRoutes);
 app.use("/api", terminosRoutes);
@@ -65,6 +66,9 @@ app.use("/api", sloganRoutes);
 app.use("/api", logoRoutes);
 app.use("/api", headerTitleRoutes);
 app.use("/api", contextoContemporaneoRoutes);
+
+//-----------------------------------------Para Oferta educativa------------------------------------------
+app.use("/api", ofertaEducativaRoutes);
 
 app.get("/api/error500", (req, res) => {
   res.status(500).send("Internal Server Error");
