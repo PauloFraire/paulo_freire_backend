@@ -1,31 +1,39 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import fileUpload from "express-fileupload"; // <-- Importa express-fileupload
 import connectDB from "./config/db.js";
 
-// import routes
 import academyActivitiesRoutes from "./routes/academyActivitiesRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import customsizeRoutes from "./routes/customsizeRoutes.js";
 import imageActivityRoutes from "./routes/imageActivityRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
-import validateTokenRoutes from "./routes/validateTokenRoutes.js"; // de main
-import politicasRoutes from "./routes/politicasRoutes.js"; // de marvin
-import deslindeRoutes from "./routes/deslindeRoutes.js"; // de marvin
-import terminosRoutes from "./routes/terminosRoutes.js"; // de marvin
-import socialRoutes from "./routes/socialLinkRoutes.js"; // de marvin
-import sloganRoutes from "./routes/sloganRoutes.js"; // de marvin
-import logoRoutes from "./routes/logoRoutes.js"; // de marvin
-import headerTitleRoutes from "./routes/headerTitleRoutes.js"; // de marvin
+import validateTokenRoutes from "./routes/validateTokenRoutes.js";
+import politicasRoutes from "./routes/politicasRoutes.js";
+import deslindeRoutes from "./routes/deslindeRoutes.js";
+import terminosRoutes from "./routes/terminosRoutes.js";
+import socialRoutes from "./routes/socialLinkRoutes.js";
+import sloganRoutes from "./routes/sloganRoutes.js";
+import logoRoutes from "./routes/logoRoutes.js";
+import headerTitleRoutes from "./routes/headerTitleRoutes.js";
 import contextoContemporaneoRoutes from "./routes/contextoContemporaneoRoutes.js";
 import ofertaEducativaRoutes from "./routes/ofertaEducativaRoutes.js";
+import pdfsCCRoutes from "./routes/pdfsCCRoutes.js";
 
 const app = express();
 dotenv.config();
 
-// Conectar a la base de datos
 connectDB();
+
+// Agrega el middleware de express-fileupload ANTES de los demás middlewares y rutas
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/"
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,10 +43,8 @@ const whitelist = "http://localhost:5173";
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.includes(origin)) {
-      // Puede consultar la API
       callback(null, true);
     } else {
-      // No está permitido
       callback(new Error("Error de Cors"));
     }
   },
@@ -66,8 +72,7 @@ app.use("/api", sloganRoutes);
 app.use("/api", logoRoutes);
 app.use("/api", headerTitleRoutes);
 app.use("/api", contextoContemporaneoRoutes);
-
-//-----------------------------------------Para Oferta educativa------------------------------------------
+app.use("/api", pdfsCCRoutes);
 app.use("/api", ofertaEducativaRoutes);
 
 app.get("/api/error500", (req, res) => {

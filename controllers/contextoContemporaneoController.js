@@ -50,7 +50,6 @@ const actualizarContexto = async (req, res) => {
         contexto.mainLinkAutor = req.body.mainLinkAutor || contexto.mainLinkAutor;
         contexto.mainLink = req.body.mainLink || contexto.mainLink;
         contexto.secondaryLinks = req.body.secondaryLinks || contexto.secondaryLinks;
-        contexto.pdfs = req.body.pdfs || contexto.pdfs;
 
         const contextoActualizado = await contexto.save();
         res.json(contextoActualizado);

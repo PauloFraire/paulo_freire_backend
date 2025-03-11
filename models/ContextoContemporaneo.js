@@ -61,10 +61,7 @@ const ContextoContemporaneoSchema = new mongoose.Schema({
             }
         }
     }],
-    pdfs: [{
-        type: String,
-        trim: true
-    }]
+
 }, {
     timestamps: true
 });
