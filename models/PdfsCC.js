@@ -6,6 +6,11 @@ const pdfsCCSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    descripcion: {
+        type: String,
+        required: true,
+        trim: true
+    },
     imagen: {
         type: String,
         default: null
