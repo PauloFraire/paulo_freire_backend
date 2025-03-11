@@ -58,11 +58,15 @@ const getPdfCCById = async (req, res) => {
 };
 
 const createPdfCC = async (req, res) => {
-  const { nombre, tipo } = req.body;
+  const { nombre, tipo, descripcion } = req.body;
   const tipoNum = Number(tipo);
 
   if (!nombre || !req.files?.archivo || tipo === undefined) {
     return res.status(400).json({ message: 'Nombre, archivo PDF y tipo son campos requeridos' });
+  }
+
+  if (!descripcion || !req.files?.archivo || tipo === undefined) {
+    return res.status(400).json({ message: 'descripcion, archivo PDF y tipo son campos requeridos' });
   }
   
   if (tipoNum !== 0 && tipoNum !== 1) {
@@ -105,6 +109,7 @@ const createPdfCC = async (req, res) => {
     // Crear documento en la base de datos
     const pdf = new PdfsCC({
       nombre,
+      descripcion,
       imagen: imageResult ? imageResult.secure_url : undefined,
       imagen_public_id: imageResult ? imageResult.public_id : undefined,
       archivo: pdfResult.secure_url,
@@ -122,7 +127,7 @@ const createPdfCC = async (req, res) => {
 
 const updatePdfCC = async (req, res) => {
   const { id } = req.params;
-  const { nombre, tipo } = req.body;
+  const { nombre, tipo, descripcion } = req.body;
 
   if (!isValidObjectId(id)) {
     return res.status(400).json({ message: 'Id no válido' });
