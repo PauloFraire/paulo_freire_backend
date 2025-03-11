@@ -148,9 +148,9 @@ const updatePdfCC = async (req, res) => {
       }
 
       if (pdf.archivo_public_id) {
-        console.log("Actualizando: Eliminando archivo anterior con public_id:", pdf.archivo_public_id);
+        // console.log("Actualizando: Eliminando archivo anterior con public_id:", pdf.archivo_public_id);
         const destroyResult = await cloudinary.uploader.destroy(pdf.archivo_public_id);
-        console.log("Resultado eliminación de archivo anterior:", destroyResult);
+        // console.log("Resultado eliminación de archivo anterior:", destroyResult);
       }
 
       const pdfResult = await uploadFileFromBuffer(pdfFile, {
@@ -159,7 +159,7 @@ const updatePdfCC = async (req, res) => {
         public_id: nombre.replace(/\s+/g, "_")
       });
       
-      console.log("PDF subido a folder contexto-contemporaneo/pdfs, public_id:", pdfResult.public_id);
+    //   console.log("PDF subido a folder contexto-contemporaneo/pdfs, public_id:", pdfResult.public_id);
       pdf.archivo = pdfResult.secure_url;
       pdf.archivo_public_id = pdfResult.public_id;
     }
@@ -172,9 +172,9 @@ const updatePdfCC = async (req, res) => {
       }
 
       if (pdf.imagen_public_id) {
-        console.log("Actualizando: Eliminando imagen anterior con public_id:", pdf.imagen_public_id);
+        // console.log("Actualizando: Eliminando imagen anterior con public_id:", pdf.imagen_public_id);
         const destroyResult = await cloudinary.uploader.destroy(pdf.imagen_public_id);
-        console.log("Resultado eliminación de imagen anterior:", destroyResult);
+        // console.log("Resultado eliminación de imagen anterior:", destroyResult);
       }
 
       const imageResult = await uploadFileFromBuffer(imgFile, {
@@ -200,10 +200,10 @@ const updatePdfCC = async (req, res) => {
 };
 
 const deletePdfCC = async (req, res) => {
-    console.log("Inicio de deletePdfCC"); // Log de inicio de la función
+    // console.log("Inicio de deletePdfCC"); // Log de inicio de la función
     const { id } = req.params;
     if (!isValidObjectId(id)) {
-      console.log("Id no válido:", id);
+    //   console.log("Id no válido:", id);
       return res.status(400).json({ message: 'Id no válido' });
     }
     try {
@@ -216,24 +216,24 @@ const deletePdfCC = async (req, res) => {
   
       // Eliminar archivo PDF
       if (pdf.archivo_public_id) {
-        console.log("Intentando eliminar archivo con public_id:", pdf.archivo_public_id);
+        // console.log("Intentando eliminar archivo con public_id:", pdf.archivo_public_id);
         const pdfDestroyResult = await cloudinary.v2.uploader.destroy(pdf.archivo_public_id);
-        console.log("Resultado de eliminación del archivo:", pdfDestroyResult);
+        // console.log("Resultado de eliminación del archivo:", pdfDestroyResult);
       }
   
       // Eliminar imagen
       if (pdf.imagen_public_id) {
-        console.log("Intentando eliminar imagen con public_id:", pdf.imagen_public_id);
+        // console.log("Intentando eliminar imagen con public_id:", pdf.imagen_public_id);
         const imageDestroyResult = await cloudinary.v2.uploader.destroy(pdf.imagen_public_id);
-        console.log("Resultado de eliminación de la imagen:", imageDestroyResult);
+        // console.log("Resultado de eliminación de la imagen:", imageDestroyResult);
       }
   
       // Eliminar el documento de la base de datos
       await PdfsCC.findByIdAndDelete(id);
-      console.log("PDF eliminado de la base de datos");
+    //   console.log("PDF eliminado de la base de datos");
       res.json({ message: 'PDF eliminado correctamente' });
     } catch (error) {
-      console.log("Error al eliminar PDF:", error);
+    //   console.log("Error al eliminar PDF:", error);
       return res.status(500).json({ message: 'Error al eliminar el PDF' });
     }
   };  
