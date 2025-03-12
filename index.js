@@ -1,8 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import fileUpload from "express-fileupload"; // <-- Importa express-fileupload
-import connectDB from "./config/db.js";
+/* import fileUpload from "express-fileupload"; // <-- Importa express-fileupload
+ */import connectDB from "./config/db.js";
 
 import academyActivitiesRoutes from "./routes/academyActivitiesRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
@@ -21,19 +21,21 @@ import headerTitleRoutes from "./routes/headerTitleRoutes.js";
 import contextoContemporaneoRoutes from "./routes/contextoContemporaneoRoutes.js";
 import ofertaEducativaRoutes from "./routes/ofertaEducativaRoutes.js";
 import pdfsCCRoutes from "./routes/pdfsCCRoutes.js";
+import becaRoutes from "./routes/becaRoutes.js"; // Importar rutas de becas
+
 
 const app = express();
 dotenv.config();
 
 connectDB();
 
-// Agrega el middleware de express-fileupload ANTES de los demás middlewares y rutas
+/* // Agrega el middleware de express-fileupload ANTES de los demás middlewares y rutas
 app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/"
   })
-);
+); */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -74,6 +76,8 @@ app.use("/api", headerTitleRoutes);
 app.use("/api", contextoContemporaneoRoutes);
 app.use("/api", pdfsCCRoutes);
 app.use("/api", ofertaEducativaRoutes);
+app.use("/api", becaRoutes);
+
 
 app.get("/api/error500", (req, res) => {
   res.status(500).send("Internal Server Error");
