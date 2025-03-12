@@ -99,7 +99,7 @@ const updateBlog = async (req, res) => {
     const { id } = req.params;
     const { title, description, date, isPublished } = req.body;
 
-    console.log(title, description, date, isPublished);
+    // console.log(title, description, date, isPublished);
 
     try {
         if (!title || !description || !date || !isPublished) {

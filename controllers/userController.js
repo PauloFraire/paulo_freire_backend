@@ -145,26 +145,34 @@ const updateUser = async (req, res) => {
 
     try {
         if (!id) {
-            const error = new Error('Id requerido');
-            return res.status(400).json(error.message);
-        }
-
-        if (!name || !lastName || !email || !password) {
-            const error = new Error('Todos los campos son necesarios');
-            return res.status(400).json(error.message);
+            return res.status(400).json({ message: 'Id requerido' });
         }
 
         const user = await User.findById(id);
 
         if (!user) {
-            const error = new Error('Usuario no encontrado');
-            return res.status(400).json(error.message);
+            return res.status(400).json({ message: 'Usuario no encontrado' });
         }
 
-        user.name = name;
-        user.lastName = lastName;
-        user.email = email;
-        user.password = bcrypt.hashSync(password, 10);
+        // Update only provided fields
+        if (name) user.name = name;
+        if (lastName) user.lastName = lastName;
+        if (email) {
+            // Check if new email already exists for another user
+            const existingUser = await User.findOne({ email, _id: { $ne: id } });
+            if (existingUser) {
+                return res.status(400).json({ message: 'El correo electrónico ya está en uso' });
+            }
+            user.email = email;
+        }
+        if (password) {
+            // Check if password is in history
+            const isInHistory = await isPasswordInHistory(user.email, password);
+            if (isInHistory) {
+                return res.status(400).json({ message: 'La contraseña ya ha sido utilizada anteriormente' });
+            }
+            user.password = bcrypt.hashSync(password, 10);
+        }
 
         await user.save();
 
@@ -227,7 +235,7 @@ const getUserByEmail = async (req, res) => {
 // Editar usuario por email
 const updateUserByEmail = async (req, res) => {
     const { email } = req.params;
-    const { name, lastName, password, role } = req.body;
+    const { name, lastName, password, role, newEmail } = req.body;
 
     try {
         if (!email) {
@@ -242,11 +250,25 @@ const updateUserByEmail = async (req, res) => {
         }
 
         // Actualizar los campos si se proporcionan
-        user.name = name || user.name;
-        user.lastName = lastName || user.lastName;
-        user.role = role !== undefined ? role : user.role;
+        if (name) user.name = name;
+        if (lastName) user.lastName = lastName;
+        if (role !== undefined) user.role = role;
+
+        // Manejar cambio de email
+        if (newEmail && newEmail !== email) {
+            const existingUser = await User.findOne({ email: newEmail });
+            if (existingUser) {
+                return res.status(400).json({ message: 'El nuevo correo electrónico ya está en uso' });
+            }
+            user.email = newEmail;
+        }
 
         if (password) {
+            // Verificar si la contraseña está en el historial
+            const isInHistory = await isPasswordInHistory(email, password);
+            if (isInHistory) {
+                return res.status(400).json({ message: 'La contraseña ya ha sido utilizada anteriormente' });
+            }
             user.password = bcrypt.hashSync(password, 10);
         }
 
