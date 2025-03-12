@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import fileUpload from "express-fileupload"; // <-- Importa express-fileupload
 import connectDB from "./config/db.js";
 
 import academyActivitiesRoutes from "./routes/academyActivitiesRoutes.js";
@@ -26,14 +25,6 @@ const app = express();
 dotenv.config();
 
 connectDB();
-
-// Agrega el middleware de express-fileupload ANTES de los demás middlewares y rutas
-app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/"
-  })
-);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
