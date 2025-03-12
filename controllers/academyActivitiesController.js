@@ -10,8 +10,6 @@ const getAcademyActivities = async (req, res) => {
     }
 }
 
-
-
 const getAcademyActivityById = async (req, res) => {
 
     const { id } = req.params;
@@ -37,13 +35,12 @@ const getAcademyActivityById = async (req, res) => {
         res.json(academyActivity);
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({ message: error.message });
     }
 }
 
 //creat academy activity
-
 const createAcademyActivity = async (req, res) => {
 
     const { title, description } = req.body;
@@ -65,7 +62,7 @@ const createAcademyActivity = async (req, res) => {
         res.json(academyActivity);
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({ message: error.message });
     }
 }
@@ -101,7 +98,7 @@ const updateAcademyActivity = async (req, res) => {
 
         res.send('Actividad actualizada');
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({ message: error.message });
     }
 }
@@ -129,7 +126,7 @@ const deleteAcademyActivity = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({ message: error.message });
     }
 }
